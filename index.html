@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Team-App-Module Bubble Chart</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <script src="sheets-reader.js"></script>
+    <script src="bubble-chart.js"></script>
+  </head>
+  <body>
+    <script>
+      async function loadDataFromSheets() {
+          try {
+              // Get SPREADSHEET_ID from your Google Sheets URL:
+              // https://docs.google.com/spreadsheets/d/SPREADSHEET_ID_HERE/edit
+              // Replace with your actual spreadsheet ID
+              const SPREADSHEET_ID = '1n2PW0gH7ZsjqnoDsRguJaoATYdoTuU6OkGFPUV2RHXI';
+              
+              return await readPublicGoogleSheet(SPREADSHEET_ID);
+          } catch (error) {
+              console.error('Failed to load data from Google Sheets:', error);
+              return null;
+          }
+      }
+
+      loadDataFromSheets()
+        .then(data => {
+          if (data) {
+            new BubbleChart(800, 800)
+              .setData(data)
+              .render();
+          }
+        });
+    </script>    
+  </body>
+</html>
