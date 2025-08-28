@@ -19,10 +19,11 @@ function getModuleColor(name) {
 }
 
 class BubbleChart {
-  constructor(container, width, height) {
+  constructor(container, width, height, onFocus) {
     this.container = container;
     this.width = width;
     this.height = height;
+    this.onFocus = onFocus;
   }
 
   setData(data) {
@@ -94,6 +95,8 @@ class BubbleChart {
       };
     }
 
+    this.onFocus(this.data);
+
     return this;
   }
 
@@ -104,25 +107,6 @@ class BubbleChart {
     return this;
   }
 
-  _renderTitle(text) {
-    const titleId = `${this.container}-top-label`;
-    let titleElement = document.getElementById(titleId);
-
-    if (!titleElement) {
-      titleElement = document.createElement('div');
-      titleElement.id = titleId;
-      titleElement.style.textAlign = 'center';
-      titleElement.style.font = "bold 16px 'Segoe UI', 'Roboto', 'Arial', sans-serif";
-      titleElement.style.padding = '5px 0';
-
-      document.getElementById(this.container).appendChild(titleElement);
-    }
-
-    titleElement.textContent = text;
-
-    return titleElement;
-  }
-
   render() {
     const _self = this;
     const data = this.data;
@@ -130,11 +114,8 @@ class BubbleChart {
     if (!data) throw Error('data is not defined');
 
     // Specify the chart’s dimensions.
-  const width = this.width;
-  const height = this.height;
-
-    // Add or update the top label container above the SVG
-    this._renderTitle(data.name);
+    const width = this.width;
+    const height = this.height;
 
     // Create a more stylish color scale for non-leaf nodes.
     const color = d3.scaleLinear()
@@ -206,8 +187,7 @@ class BubbleChart {
       const focus0 = focus;
       focus = d;
 
-      // Update the top label to the current focus node's name
-      _self._renderTitle(focus.data.name);
+      _self.onFocus(focus.data);
 
       const transition = svg.transition()
         .duration(event.altKey ? 7500 : 750)

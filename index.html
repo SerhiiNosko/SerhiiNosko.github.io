@@ -20,21 +20,23 @@
       }
     </style>
 
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 
-    <script src="sheets-reader.js"></script>
-    <script src="bubble-chart.js"></script>
-    <script src="filters.js"></script>
+  <script src="sheets-reader.js"></script>
+  <script src="bubble-chart.js"></script>
+  <script src="filters.js"></script>
+  <script src="modules-list.js"></script>
   </head>
   <body>
     <div id="main">
       <div id="chart"></div>
-      <div id="filters"></div>
+      <div id="sidebar">
+        <div id="filters"></div>
+        <div id="modules-list"></div>
+      </div>
     </div>
 
     <script>
-      const folioBubbleChart = new BubbleChart('chart', 750, 750);
-
       async function loadDataFromSheets() {
           try {
               const SPREADSHEET_ID = '1n2PW0gH7ZsjqnoDsRguJaoATYdoTuU6OkGFPUV2RHXI';
@@ -46,10 +48,14 @@
           }
       }
 
+      const moduleList = new ModulesList('modules-list');
+      const folioBubbleChart = new BubbleChart('chart', 750, 750, moduleList.render.bind(moduleList));
+
       loadDataFromSheets()
         .then(data => {
           if (data) {
-            console.log(data)
+            moduleList.setDataSource(data);
+            // moduleList.render(data);
             new Filters('filters', data, (filteredData) => {
               folioBubbleChart
                 .reset()

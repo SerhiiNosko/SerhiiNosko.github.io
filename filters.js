@@ -46,7 +46,7 @@ class Filters {
           border-color: #a5a8a9;
         }
         .filter-component-wrapper button {
-          background: #a5a8a9;
+          background: #476fa0ff;
           color: #fff;
           border: none;
           cursor: pointer;
