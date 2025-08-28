@@ -42,7 +42,7 @@
               return await readPublicGoogleSheet(SPREADSHEET_ID);
           } catch (error) {
               console.error('Failed to load data from Google Sheets:', error);
-              return null;
+              return loadDataFromSheets();
           }
       }
 

@@ -104,14 +104,37 @@ class BubbleChart {
     return this;
   }
 
+  _renderTitle(text) {
+    const titleId = `${this.container}-top-label`;
+    let titleElement = document.getElementById(titleId);
+
+    if (!titleElement) {
+      titleElement = document.createElement('div');
+      titleElement.id = titleId;
+      titleElement.style.textAlign = 'center';
+      titleElement.style.font = "bold 16px 'Segoe UI', 'Roboto', 'Arial', sans-serif";
+      titleElement.style.padding = '5px 0';
+
+      document.getElementById(this.container).appendChild(titleElement);
+    }
+
+    titleElement.textContent = text;
+
+    return titleElement;
+  }
+
   render() {
+    const _self = this;
     const data = this.data;
 
     if (!data) throw Error('data is not defined');
 
     // Specify the chart’s dimensions.
-    const width = this.width;
-    const height = this.height;
+  const width = this.width;
+  const height = this.height;
+
+    // Add or update the top label container above the SVG
+    this._renderTitle(data.name);
 
     // Create a more stylish color scale for non-leaf nodes.
     const color = d3.scaleLinear()
@@ -122,7 +145,7 @@ class BubbleChart {
     // Compute the layout.
     const pack = data => d3.pack()
       .size([width, height])
-      .padding(3)
+      .padding(10) // Increase padding for borderless look
       (d3.hierarchy(data)
       .sum(d => d.value || 1)
       .sort((a, b) => b.value - a.value));
@@ -181,22 +204,24 @@ class BubbleChart {
 
     function zoom(event, d) {
       const focus0 = focus;
-
       focus = d;
+
+      // Update the top label to the current focus node's name
+      _self._renderTitle(focus.data.name);
 
       const transition = svg.transition()
         .duration(event.altKey ? 7500 : 750)
         .tween("zoom", d => {
-        const i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2]);
-        return t => zoomTo(i(t));
+          const i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2]);
+          return t => zoomTo(i(t));
         });
 
       label
-      .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
-      .transition(transition)
-        .style("fill-opacity", d => d.parent === focus ? 1 : 0)
-        .on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
-        .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+        .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+        .transition(transition)
+          .style("fill-opacity", d => d.parent === focus ? 1 : 0)
+          .on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+          .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
     }
 
     document.getElementById(this.container).appendChild(svg.node());
