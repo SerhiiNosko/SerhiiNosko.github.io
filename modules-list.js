@@ -23,7 +23,7 @@ class ModulesList {
     ul.style.padding = '8px 16px';
     ul.style.margin = '0';
     ul.style.overflowY = 'auto';
-    ul.style.maxHeight = '445px';
+    ul.style.maxHeight = '541.5px';
 
     this.modules.forEach(module => {
       const moduleInfo = this.dataSource[module];
@@ -57,6 +57,15 @@ class ModulesList {
       meta.style.marginLeft = '1.5rem';
       meta.style.color = '#4a5a6a';
       meta.style.fontSize = '1rem';
+
+      // Team
+      const teamLabel = document.createElement('span');
+      teamLabel.textContent = 'Team:';
+      teamLabel.style.fontWeight = '500';
+      teamLabel.style.color = '#6c7a89';
+      meta.appendChild(teamLabel);
+      meta.appendChild(document.createTextNode(' ' + (moduleInfo['team'] || '-') ));
+      meta.appendChild(document.createElement('br'));
 
       // Product owner
       const poLabel = document.createElement('span');
