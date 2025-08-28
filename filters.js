@@ -1,11 +1,11 @@
-
 class Filters {
   constructor(elementId, data, onFilter) {
     this.elementId = elementId;
     this.data = Array.isArray(data) ? data.slice() : [];
     this.onFilter = typeof onFilter === 'function' ? onFilter : () => {};
-    this.selectedModule = '';
-    this.selectedApplication = '';
+  this.selectedModule = '';
+  this.selectedApplication = '';
+  this.selectedFirstRelease = '';
     this._render();
   }
 
@@ -58,6 +58,17 @@ class Filters {
     const wrapper = document.createElement('div');
     wrapper.className = 'filter-component-wrapper';
 
+    // First Release dropdown
+    const firstReleases = this._getUniqueValues('first release');
+    const firstReleaseSelect = document.createElement('select');
+    firstReleaseSelect.innerHTML = `<option value="">All First Releases</option>` +
+      firstReleases.map(fr => `<option value="${fr}">${fr}</option>`).join('');
+    firstReleaseSelect.value = this.selectedFirstRelease;
+    firstReleaseSelect.addEventListener('change', (e) => {
+      this.selectedFirstRelease = e.target.value;
+      this._onFilterChange();
+    });
+
     // Module dropdown
     const modules = this._getUniqueValues('module');
     const moduleSelect = document.createElement('select');
@@ -87,13 +98,16 @@ class Filters {
     resetBtn.addEventListener('click', () => {
       this.selectedModule = '';
       this.selectedApplication = '';
+      this.selectedFirstRelease = '';
       moduleSelect.value = '';
       appSelect.value = '';
+      firstReleaseSelect.value = '';
       this._onFilterChange();
     });
 
     wrapper.appendChild(appSelect);
     wrapper.appendChild(moduleSelect);
+    wrapper.appendChild(firstReleaseSelect);
     wrapper.appendChild(resetBtn);
     container.appendChild(wrapper);
   }
@@ -102,7 +116,8 @@ class Filters {
     let filtered = this.data.filter(item => {
       const moduleMatch = this.selectedModule ? item.module === this.selectedModule : true;
       const appMatch = this.selectedApplication ? item.application === this.selectedApplication : true;
-      return moduleMatch && appMatch;
+      const firstReleaseMatch = this.selectedFirstRelease ? item['first release'] === this.selectedFirstRelease : true;
+      return moduleMatch && appMatch && firstReleaseMatch;
     });
     this.onFilter(filtered);
   }

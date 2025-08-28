@@ -49,6 +49,7 @@
       loadDataFromSheets()
         .then(data => {
           if (data) {
+            console.log(data)
             new Filters('filters', data, (filteredData) => {
               folioBubbleChart
                 .reset()
