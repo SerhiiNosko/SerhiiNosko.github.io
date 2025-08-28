@@ -1,3 +1,23 @@
+// Color palette for module types
+const MODULE_COLORS = {
+  backend: '#4285F4',      // modern blue
+  frontend: '#FF7043',     // modern orange-red
+  frontendUtil: '#66BB6A', // modern green
+  backendUtil: '#AB47BC',  // modern purple
+  other: '#FFCA28'         // modern amber
+};
+
+// Function to determine module type color by name
+function getModuleColor(name) {
+  if (!name) return MODULE_COLORS.other;
+  const lower = name.toLowerCase();
+  if (lower.startsWith('mod') || lower.startsWith('edge')) return MODULE_COLORS.backend;
+  if (lower.startsWith('ui')) return MODULE_COLORS.frontend;
+  if (lower.startsWith('stripes')) return MODULE_COLORS.frontendUtil;
+  if (lower.startsWith('folio')) return MODULE_COLORS.backendUtil;
+  return MODULE_COLORS.other;
+}
+
 class BubbleChart {
   constructor(container, width, height) {
     this.container = container;
@@ -72,8 +92,6 @@ class BubbleChart {
         name: `${teams[0].name} - ${teams[0].children[0].name}`,
         children: teams[0].children[0].children,
       };
-
-      console.log(this.data)
     }
 
     return this;
@@ -95,10 +113,10 @@ class BubbleChart {
     const width = this.width;
     const height = this.height;
 
-    // Create the color scale.
+    // Create a more stylish color scale for non-leaf nodes.
     const color = d3.scaleLinear()
       .domain([0, 5])
-      .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+      .range(["#F5F7FA", "#90A4AE"]) // light gray to blue-gray
       .interpolate(d3.interpolateHcl);
 
     // Compute the layout.
@@ -115,14 +133,18 @@ class BubbleChart {
       .attr("viewBox", `-${width / 2} -${height / 2} ${width} ${height}`)
       .attr("width", width)
       .attr("height", height)
-      .attr("style", `max-width: 100%; height: auto; display: block; margin: 0 auto; background: ${color(0)}; cursor: pointer;`);
+      .attr("style", `max-width: 100%; display: block; margin: 0 auto; cursor: pointer;`);
 
     // Append the nodes.
     const node = svg.append("g")
       .selectAll("circle")
       .data(root.descendants().slice(1))
       .join("circle")
-      .attr("fill", d => d.children ? color(d.depth) : "white")
+      .attr("fill", d => {
+        if (d.children) return color(d.depth);
+        // Leaf node: color by module name
+        return getModuleColor(d.data.name);
+      })
       .attr("pointer-events", d => !d.children ? "none" : null)
       .on("mouseover", function() { d3.select(this).attr("stroke", "#000"); })
       .on("mouseout", function() { d3.select(this).attr("stroke", null); })
@@ -130,7 +152,7 @@ class BubbleChart {
 
     // Append the text labels.
     const label = svg.append("g")
-      .style("font", "10px sans-serif")
+      .style("font", "12px 'Segoe UI', 'Roboto', 'Arial', sans-serif")
       .attr("pointer-events", "none")
       .attr("text-anchor", "middle")
       .selectAll("text")
@@ -138,6 +160,7 @@ class BubbleChart {
       .join("text")
       .style("fill-opacity", d => d.parent === root ? 1 : 0)
       .style("display", d => d.parent === root ? "inline" : "none")
+      .style("fill", d => d.children ? "#37474F" : "#263238")
       .text(d => d.data.name);
 
     // Create the zoom behavior and zoom immediately in to the initial focus node.

@@ -27,7 +27,6 @@ class Filters {
           display: flex;
           flex-direction: column;
           gap: 12px;
-          background: rgb(163, 245, 207);
           border-radius: 10px;
           padding: 18px 16px;
           max-width: 260px;
@@ -37,17 +36,17 @@ class Filters {
           font-size: 1rem;
           padding: 7px 10px;
           border-radius: 6px;
-          border: 1px solid rgb(116,216,202);
+          border: 1px solid #a5a8a9;
           background: white;
           color: #222;
           outline: none;
           transition: border 0.2s;
         }
         .filter-component-wrapper select:focus, .filter-component-wrapper button:focus {
-          border-color: rgb(116,216,202);
+          border-color: #a5a8a9;
         }
         .filter-component-wrapper button {
-          background: rgb(116,216,202);
+          background: #a5a8a9;
           color: #fff;
           border: none;
           cursor: pointer;
