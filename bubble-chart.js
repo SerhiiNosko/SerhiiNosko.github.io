@@ -1,5 +1,6 @@
 class BubbleChart {
-  constructor(width, height) {
+  constructor(container, width, height) {
+    this.container = container;
     this.width = width;
     this.height = height;
   }
@@ -61,10 +62,26 @@ class BubbleChart {
       };
     });
     
-    this.data = {
-      name: 'FOLIO',
-      children: teams
-    };
+    if (teams.length > 1) {
+      this.data = {
+        name: 'FOLIO',
+        children: teams,
+      };
+    } else {
+      this.data = {
+        name: `${teams[0].name} - ${teams[0].children[0].name}`,
+        children: teams[0].children[0].children,
+      };
+
+      console.log(this.data)
+    }
+
+    return this;
+  }
+
+  reset() {
+    this.data = null;
+    document.getElementById(this.container).innerHTML = '';
 
     return this;
   }
@@ -98,7 +115,7 @@ class BubbleChart {
       .attr("viewBox", `-${width / 2} -${height / 2} ${width} ${height}`)
       .attr("width", width)
       .attr("height", height)
-      .attr("style", `max-width: 100%; height: auto; display: block; margin: 0 -14px; background: ${color(0)}; cursor: pointer;`);
+      .attr("style", `max-width: 100%; height: auto; display: block; margin: 0 auto; background: ${color(0)}; cursor: pointer;`);
 
     // Append the nodes.
     const node = svg.append("g")
@@ -159,6 +176,6 @@ class BubbleChart {
         .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
     }
 
-    document.body.appendChild(svg.node());        // Render the bubble chart using D3.js
+    document.getElementById(this.container).appendChild(svg.node());
   }
 }

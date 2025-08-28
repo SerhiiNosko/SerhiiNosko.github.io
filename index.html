@@ -3,18 +3,40 @@
   <head>
     <meta charset="UTF-8">
     <title>Team-App-Module Bubble Chart</title>
+
+    <style>
+      html {
+        background: rgb(163, 245, 207);
+      }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #main {
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+
     <script src="https://d3js.org/d3.v7.min.js"></script>
 
     <script src="sheets-reader.js"></script>
     <script src="bubble-chart.js"></script>
+    <script src="filters.js"></script>
   </head>
   <body>
+    <div id="main">
+      <div id="chart"></div>
+      <div id="filters"></div>
+    </div>
+
     <script>
+      const folioBubbleChart = new BubbleChart('chart', 750, 750);
+
       async function loadDataFromSheets() {
           try {
-              // Get SPREADSHEET_ID from your Google Sheets URL:
-              // https://docs.google.com/spreadsheets/d/SPREADSHEET_ID_HERE/edit
-              // Replace with your actual spreadsheet ID
               const SPREADSHEET_ID = '1n2PW0gH7ZsjqnoDsRguJaoATYdoTuU6OkGFPUV2RHXI';
               
               return await readPublicGoogleSheet(SPREADSHEET_ID);
@@ -27,7 +49,14 @@
       loadDataFromSheets()
         .then(data => {
           if (data) {
-            new BubbleChart(800, 800)
+            new Filters('filters', data, (filteredData) => {
+              folioBubbleChart
+                .reset()
+                .setData(filteredData)
+                .render();
+            });
+
+            folioBubbleChart
               .setData(data)
               .render();
           }
